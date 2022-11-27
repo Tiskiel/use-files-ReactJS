@@ -9,7 +9,8 @@ export default function ViewFiles() {
     const [choice, setChoice] = useState([])
     const [selectedFiles, setSelectedFiles] = useState([])
 
-    const files = location.state
+    const files = location.state.file
+    const headers = location.state.headers
 
     useEffect(() => {
         console.log(choice);
@@ -34,7 +35,7 @@ export default function ViewFiles() {
     })
 
     const showData = () => {
-        navigate('/home/upload-files/view-data', { state: {selectedFiles}})
+        navigate('/home/upload-files/view-data', { state: {files: selectedFiles, headers: headers}})
     }
 
     return (

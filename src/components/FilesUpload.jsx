@@ -6,13 +6,14 @@ import * as xlsx from 'xlsx'
 export default function FilesUpload(props)
 {   
     const [file, setFile] = useState([])
+    const [headers, setHeaders] = useState([])
+    const [goodHeaders, setGoodHeaders] = useState([])
     const navigate = useNavigate()
     
     const readUploadFile = (e) => {
         e.preventDefault()
         if (e.target.files) {
 
-            console.log(e.target.files)
             for(let i in e.target.files) {
                 if (isNaN(i)) continue;
                 console.log(i);
@@ -37,34 +38,38 @@ export default function FilesUpload(props)
             reader.readAsArrayBuffer(file)
             }
         
-            }
-            
         }
+            
+    }
     
     const readUploadHeaderFile = (e) => {
 
         if(e.target.files)
         {   
-            const fileName = e.target.files[0].name
-            const reader = new FileReader()
             
-            reader.onload = (e) => {
+            for (let i in e.target.files){
+                const fileName = e.target.files[0].name
+                const reader = new FileReader()
                 
-                const data = e.target.result
-                const workbook = xlsx.read(data, { type : 'binary'})
-                const header = getHeader(workbook)
-                const newObj = {
-                    fileName: fileName,
-                    listHeader: header
+                reader.onload = (e) => {
+                    
+                    const data = e.target.result
+                    const workbook = xlsx.read(data, { type : 'binary'})
+                    const header = getHeader(workbook)
+                    setHeaders(current => [...current, ...header])
+                    for ( let i = 0; i < headers.length; i++ ) {
+                        if (!goodHeaders.includes(headers[i])) {
+                            setGoodHeaders(current => [...current, headers[i]])
+                        }
+                    }
                 }
-                
+                reader.readAsArrayBuffer(e.target.files[0])
             }
-            reader.readAsArrayBuffer(e.target.files[0])
         }
     }
 
     const navigateToView = () => {
-        navigate('/home/upload-files/view-files', { state: file })
+        navigate('/home/upload-files/view-files', { state: {file: file, headers: headers} })
     }
 
     const onChange = (e) => {

@@ -5,9 +5,10 @@ import ShowDataChoice from '../components/ShowDataChoice'
 export default function ViewDataChoice() {
 
     const location = useLocation()
-    const files = location.state
+    const files = location.state.files
+    const headers = location.state.headers
     console.log(files);
     return (
-        <ShowDataChoice files={files}/>
+        <ShowDataChoice files={files} headers={headers}/>
     )
 }
