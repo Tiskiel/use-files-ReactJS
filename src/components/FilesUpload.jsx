@@ -1,33 +1,45 @@
+import {  useState } from 'react'
+import {  useNavigate } from 'react-router-dom'
 import * as xlsx from 'xlsx'
 
 
-export default function FilesUpload()
+export default function FilesUpload(props)
 {   
-    const listDataFiles = []
-    const listHeaders = []
+    const [file, setFile] = useState([])
+    const navigate = useNavigate()
     
     const readUploadFile = (e) => {
         e.preventDefault()
         if (e.target.files) {
-            const fileName = e.target.files[0].name
-            console.log(typeof fileName);
-            const reader = new FileReader()
-            reader.onload = (e) => {
-                
-                const data = e.target.result
-                const workbook = xlsx.read(data, { type: "array"})
-                const sheetName = workbook.SheetNames[0]
-                const worksheet = workbook.Sheets[sheetName]
-                const json = xlsx.utils.sheet_to_json(worksheet)
+
+            console.log(e.target.files)
+            for(let i in e.target.files) {
+                if (isNaN(i)) continue;
+                console.log(i);
+                const file = e.target.files[i];
+                const fileName = file.name
             
-                listDataFiles.push(json)
-                console.log(`Ceci est la liste des datas :`)
-                console.log(listDataFiles)
+                const reader = new FileReader()
+                reader.onload = (e) => {
+                    const data = e.target.result
+                    const workbook = xlsx.read(data, { type: "array"})
+                    const sheetName = workbook.SheetNames[0]
+                    const worksheet = workbook.Sheets[sheetName]
+                    const json = xlsx.utils.sheet_to_json(worksheet)
+                    const newObj = {
+                        name: fileName,
+                        file: json
+                    }
+                    setFile(current => [...current, newObj])
+                }
+                
+
+            reader.readAsArrayBuffer(file)
             }
-            reader.readAsArrayBuffer(e.target.files[0])
-        }
         
-    }
+            }
+            
+        }
     
     const readUploadHeaderFile = (e) => {
 
@@ -45,21 +57,23 @@ export default function FilesUpload()
                     fileName: fileName,
                     listHeader: header
                 }
-                listHeaders.push(newObj)
-                console.log(`Ceci est la liste des headers : `)
-                console.log(listHeaders)
+                
             }
             reader.readAsArrayBuffer(e.target.files[0])
         }
     }
 
+    const navigateToView = () => {
+        navigate('/home/upload-files/view-files', { state: file })
+    }
+
     const onChange = (e) => {
         readUploadHeaderFile(e)
         readUploadFile(e)
+        e.target.value = null
     }
 
-    const finalHeaderList = matchHeader(listHeaders)
-
+    
     return (
         <form>
             <label htmlFor="upload">Up file</label>
@@ -68,7 +82,11 @@ export default function FilesUpload()
                 name="upload"
                 id="upload"
                 onChange={onChange}
+                multiple
             />
+            <button onClick={navigateToView}>
+                View files
+            </button>
         </form>
 
     )
@@ -86,15 +104,3 @@ function getHeader(workbook)
     return header 
 }
 
-function matchHeader(listHeader) {
-
-    const finalMatchArray = []
-
-    for (let i = 0; i < listHeader.length-1; i++) {
-        
-        listHeader[i] === listHeader[i+1] ? finalMatchArray.push(listHeader[i]) : finalMatchArray.push(listHeader[i+1])      
-    }
-
-    return finalMatchArray
-    
-}
