@@ -34,14 +34,14 @@ export default function ShowDataChoice({ files, headers }) {
     const showTable = head.map((it, i) => {
         return (
             <div key={'col-' + i}>
-                <p>{it.key}</p>
+                <p className='font-bold border-2 p-1'>{it.key}</p>
                 {
                     allData.map((data, row) => {
                         const index = it.data.find(item => item.id == data._id);
                         if (!index || index.value == ' ') {
-                            return <p key={it.key + '-' + row}>NULL</p>
+                            return <p key={it.key + '-' + row} className='border-2 p-1'>NULL</p>
                         } else {
-                            return <p key={it.key + '-' + row}>{index.value}</p>
+                            return <p key={it.key + '-' + row} className='border-2 p-1'>{index.value}</p>
                         }
                     })
                 }
@@ -62,38 +62,6 @@ export default function ShowDataChoice({ files, headers }) {
         }
     }
 
-    // const showTable = head.map((el, n) => (
-    //     <div key={'col- '+ n} >
-    //         <p key={'row-title'+ n} className='font-bold'>{el.header}</p>
-    //         {
-    //             el.values.map((it, i) => (
-    //                 <p key={'col-'+ i} className='font-normal'>{it}</p>
-    //             ))
-    //         }
-    //     </div>
-    // ))
-
-    // allData.forEach((item, i) => {
-    //     head.forEach((col, colId) => {
-    //         const finded = col.values.find(it => it == item.id);
-    //         console.log(finded, col.values, item.id)
-    //         if (col.values.find(it => it === item.id)) {
-    //             col.data.push(item[col.header])
-    //         } else {
-    //             col.data.push(" ");
-    //         }
-    //     })
-    // })
-    // const showTable = head.map((el, n) => (
-    //         <div key={'col- '+ n} >
-    //             <p key={'row-title'+ n} className='font-bold'>{el.header}</p>
-    //             {
-    //                 el.data.map((it, i) => (
-    //                     <p key={'col-'+ i} className='font-normal'>{it}</p>
-    //                 ))
-    //             }
-    //         </div>
-    //     ))
 
     for (let i = 0; i < allData.length; i++) {
         dataValue.push(Object.values(allData[i]))
