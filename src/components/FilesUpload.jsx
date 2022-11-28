@@ -69,7 +69,7 @@ export default function FilesUpload(props)
     }
 
     const navigateToView = () => {
-        navigate('/home/upload-files/view-files', { state: {file: file, headers: headers} })
+        navigate('/home/upload-files/view-files', { state: {files: file, headers: headers} })
     }
 
     const onChange = (e) => {

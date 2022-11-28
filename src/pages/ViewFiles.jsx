@@ -9,8 +9,17 @@ export default function ViewFiles() {
     const [choice, setChoice] = useState([])
     const [selectedFiles, setSelectedFiles] = useState([])
 
-    const files = location.state.file
-    const headers = location.state.headers
+    const [{files, headers}, setLoc] = useState(location.state);
+
+    useEffect(() => {
+        console.log(location)
+        const files = location.state.files
+        const headers = location.state.headers
+
+        console.log(files, headers)
+
+        setLoc({files, headers})
+    }, [])
 
     useEffect(() => {
         console.log(choice);

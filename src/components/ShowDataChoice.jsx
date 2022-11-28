@@ -1,6 +1,6 @@
 import React from 'react'
 
-export default function ShowDataChoice({files, headers}) {
+export default function ShowDataChoice({ files, headers }) {
     // console.log(files)
 
     const cleanHeadersList = []
@@ -8,72 +8,99 @@ export default function ShowDataChoice({files, headers}) {
     const dataValue = []
 
     for (let i = 0; i < files.length; i++) {
-        for (let j = 0; j< files[i].file.length; j++) {  
-            allData.push(files[i].file[j])
+        for (let j = 0; j < files[i].file.length; j++) {
+            allData.push({ _id: `${i}${j}`, ...files[i].file[j] })
         }
-        
+
     }
 
     const head = [];
 
     allData.forEach(it => {
-        for(let key in it) {
-            let finded = head.find(it => it.header && it.header == key);
-
+        for (let key in it) {
+            if (key == '_id') continue;
+            let finded = head.find(it => it.key && it.key == key);
             if (!finded) {
-                head.push({header: key, values: []});
+                head.push({ key, data: [] });
             }
-
-            finded = head.find(it => it.header == key)
-
-            finded.values.push(it[key])
         }
-    })
 
-    // console.log(allData, head);
-    
+        for (let col of head) {
+            const value = it[col.key] || " ";
+            col.data.push({ id: it._id, value });
+        }
+    });
+
+    const showTable = head.map((it, i) => {
+        return (
+            <div key={'col-' + i}>
+                <p>{it.key}</p>
+                {
+                    allData.map((data, row) => {
+                        const index = it.data.find(item => item.id == data._id);
+                        if (!index || index.value == ' ') {
+                            return <p key={it.key + '-' + row}>NULL</p>
+                        } else {
+                            return <p key={it.key + '-' + row}>{index.value}</p>
+                        }
+                    })
+                }
+            </div>)
+    });
+
     for (let i = 0; i < headers.length; i++) {
-        if(!cleanHeadersList.includes(headers[i])) {
+        if (!cleanHeadersList.includes(headers[i])) {
             cleanHeadersList.push(headers[i])
         }
     }
 
-    // for (let i = 0; i < cleanHeadersList.length; i++) {
-    //     for(let j = 0; j < cleanHeadersList.length; j++) {
-    //         if(head[i].header != cleanHeadersList[j]){
-    //             head.push({header: cleanHeadersList[j], values: []})
-    //         }
-    //     }
-    // }
 
-    for(let cHeader of cleanHeadersList) {
-        let isFind = head.find(it => it.header === cHeader);
+    for (let cHeader of cleanHeadersList) {
+        let isFind = head.find(it => it.key === cHeader);
         if (!isFind) {
-            head.push({header: cHeader, values: []});
+            head.push({ key: cHeader, values: [], data: [] });
         }
     }
-    console.log(head); 
-    console.log(cleanHeadersList)
 
-    const showTable = head.map((el, n) => (
-        <div key={'col- '+ n}>
-            <p key={'row-title'+ n}>{el.header}</p>
-            {
-                el.values.map((it, i) => (
-                    <p key={'col-'+ i}>{it}</p>
-                ))
-            }
-        </div>
-    ))
+    // const showTable = head.map((el, n) => (
+    //     <div key={'col- '+ n} >
+    //         <p key={'row-title'+ n} className='font-bold'>{el.header}</p>
+    //         {
+    //             el.values.map((it, i) => (
+    //                 <p key={'col-'+ i} className='font-normal'>{it}</p>
+    //             ))
+    //         }
+    //     </div>
+    // ))
+
+    // allData.forEach((item, i) => {
+    //     head.forEach((col, colId) => {
+    //         const finded = col.values.find(it => it == item.id);
+    //         console.log(finded, col.values, item.id)
+    //         if (col.values.find(it => it === item.id)) {
+    //             col.data.push(item[col.header])
+    //         } else {
+    //             col.data.push(" ");
+    //         }
+    //     })
+    // })
+    // const showTable = head.map((el, n) => (
+    //         <div key={'col- '+ n} >
+    //             <p key={'row-title'+ n} className='font-bold'>{el.header}</p>
+    //             {
+    //                 el.data.map((it, i) => (
+    //                     <p key={'col-'+ i} className='font-normal'>{it}</p>
+    //                 ))
+    //             }
+    //         </div>
+    //     ))
 
     for (let i = 0; i < allData.length; i++) {
         dataValue.push(Object.values(allData[i]))
     }
 
-    
-
     return (
-        <div>
+        <div className='flex flex-row'>
             {showTable}
         </div>
     )
